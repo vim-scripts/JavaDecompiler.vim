@@ -1,0 +1,5 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=446
+
+When you edit a .class file using vim, this plugin will decompile the class file for you and display it in the current buffer.
+
+Admittedly, the buffer management is not very robust, but it's a very handy plugin nonetheless.  How much cooler is it to view decompiled code using your favorite editor than to download a new UI to view Java code in?!
