@@ -2,23 +2,20 @@
 " Ideas:  Allow for a default to be set in the vimrc
 "         - map a keystroke to decompile and edit, or decompile and view in
 "         split window
-if exists("loaded_gzip") || &cp || exists("#BufReadPre#*.gz")
+if exists("loaded_jad") || &cp || exists("#BufReadPre#*.class")
   finish
 endif
-let loaded_gzip = 1
+let loaded_jad = 1
 
 augroup class
-  " Remove all gzip autocommands
+  " Remove all jad autocommands
   au!
 
-  " Enable editing of gzipped files
+  " Enable editing of jadped files
   " set binary mode before reading the file
-  " use "gzip -d", gunzip isn't always available
+  " use "jad -d", decompile  isn't always available
   autocmd BufReadPre,FileReadPre	*.class  set bin
   autocmd BufReadPost,FileReadPost	*.class  call s:read("jad")
-  "autocmd BufWritePost,FileWritePost	*.gz  call s:write("gzip")
-  "autocmd FileAppendPre			*.gz  call s:appre("gzip -d")
-  "autocmd FileAppendPost		*.gz  call s:write("gzip")
 augroup END
 
 " Function to check that executing "cmd [-f]" works.
@@ -36,7 +33,7 @@ fun s:check(cmd)
   exe "return s:have_" . name
 endfun
 
-" After reading compressed file: Uncompress text in buffer with "cmd"
+" After reading decompiled file: Decompiled text in buffer with "cmd"
 fun s:read(cmd)
   " don't do anything if the cmd is not supported
   if !s:check(a:cmd)
@@ -52,11 +49,10 @@ fun s:read(cmd)
   let empty = line("'[") == 1 && line("']") == line("$")
   let jadfile = expand("<afile>:r") . "." . "jad"
   let orig = expand("<afile>")
-  " uncompress the temp file: call system("gzip -d tmp.gz")
   "call system(a:cmd . " " . orig)
-  " delete the compressed lines
+  " delete the decompiled lines
   "'[,']d
-  " read in the uncompressed lines "'[-1r tmp"
+  " read in the decompiled lines "'[-1r tmp"
   set nobin
 
   "Split and show code in a new window
@@ -81,13 +77,13 @@ fun s:read(cmd)
   "silent! exe "bwipe " . tmpe
   let &pm = pm_save
   let &ma = ma_save
-  " When uncompressed the whole buffer, do autocommands
+  " When decompiled the whole buffer, do autocommands
   "if empty
   "  execute ":silent! doau BufReadPost " . expand("%:r")
   "endif
 endfun
 
-" After writing compressed file: Compress written file with "cmd"
+" After writing decompiled file: compile written file with "cmd"
 fun s:write(cmd)
   " don't do anything if the cmd is not supported
   if s:check(a:cmd)
@@ -97,7 +93,7 @@ fun s:write(cmd)
   endif
 endfun
 
-" Before appending to compressed file: Uncompress file with "cmd"
+" Before appending to compiled file: decompile file with "cmd"
 fun s:appre(cmd)
   " don't do anything if the cmd is not supported
   if s:check(a:cmd)
